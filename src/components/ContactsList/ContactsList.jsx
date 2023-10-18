@@ -1,9 +1,16 @@
 import { ButtonWrapper, DeleteButton, Item, List } from './ContactsList.styled';
 import { FaTrashAlt } from 'react-icons/fa';
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getContacts, handleFilter } from 'redux/selectors';
+import { deleteContacts } from 'redux/actions';
 
-export default function ContactsList({ contacts, filter, deleteContacts }) {
+export default function ContactsList() {
   const [contactsToDelete, setContactsToDelete] = useState([]);
+
+  const filter = useSelector(handleFilter);
+  const contacts = useSelector(getContacts);
+  const dispatch = useDispatch();
 
   const handleCheckboxStatus = selectedContact => {
     setContactsToDelete(
@@ -11,6 +18,10 @@ export default function ContactsList({ contacts, filter, deleteContacts }) {
         ? contactsToDelete.filter(contact => contact !== selectedContact)
         : [...contactsToDelete, selectedContact]
     );
+  };
+
+  const deleteChosenContacts = contactsToDelete => {
+    dispatch(deleteContacts(contactsToDelete));
   };
 
   const reset = () => setContactsToDelete([]);
@@ -48,7 +59,7 @@ export default function ContactsList({ contacts, filter, deleteContacts }) {
             if (contactsToDelete.length === 0)
               alert('Choose contact(s) to delete');
             else {
-              deleteContacts(contactsToDelete);
+              deleteChosenContacts(contactsToDelete);
               reset();
             }
           }}
